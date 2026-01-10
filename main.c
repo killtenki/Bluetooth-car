@@ -69,9 +69,9 @@ UART_HandleTypeDef huart1;
 uint8_t Rdata;
 uint8_t soft_start;
 uint32_t	time_update;
-uint8_t acceleration = 2;
+uint8_t acceleration = 50;
 uint16_t speed;
-uint16_t target_speed = 2880;
+uint16_t target_speed = 4800;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -252,7 +252,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -319,6 +319,14 @@ static void MX_GPIO_Init(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	if(huart->Instance == USART1){
 		switch(Rdata){
+			case 'Q':
+				target_speed = 2000;
+				break;
+			case 'W':
+				target_speed = 3000;
+				break;
+			case 'E':
+				target_speed = 4800;
 			case 'F':
 				HAL_GPIO_WritePin(p_left_port, p_left, high );
 				HAL_GPIO_WritePin(p_right_port, p_right, high );
@@ -354,6 +362,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 				HAL_GPIO_WritePin(n_right_port, n_right, low );
 				soft_start = 0;
 				speed = 0;
+				break;
 		}
 		HAL_UART_Receive_IT(&huart1, &Rdata, 1);
 	}
